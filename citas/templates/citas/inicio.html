@@ -4,20 +4,70 @@
 
 {% block content %}
 
-<h2>Bienvenido a Clínica Estética</h2>
+<div class="text-center py-5">
+    <h1 class="display-5">Bienvenido a Clínica Estética</h1>
 
-<p>
-    Sistema web para la gestión y reservación de citas de la clínica.
-</p>
+    <p class="lead mt-3">
+        Sistema web para la gestión y reservación de citas de la clínica.
+    </p>
+</div>
 
-<h3>Servicios</h3>
+<div class="row g-4">
 
-<p>
-    Consulta nuestros servicios y administra tus citas de manera sencilla.
-</p>
+    <!-- SERVICIOS -->
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <h3 class="card-title">Servicios</h3>
 
-<a href="{% url 'login' %}">
-    Iniciar sesión
-</a>
+                <p class="card-text">
+                    Consulta los tratamientos y servicios disponibles.
+                </p>
+
+                <a href="{% url 'servicios' %}" 
+                   class="btn btn-outline-secondary">
+                    Ver servicios
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESERVAR CITA -->
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <h3 class="card-title">Reservar cita</h3>
+
+                <p class="card-text">
+                    Agenda una cita de acuerdo con el servicio que necesitas.
+                </p>
+
+                <a href="{% url 'login' %}" 
+                   class="btn btn-primary">
+                    Reservar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MIS CITAS -->
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <h3 class="card-title">Mis citas</h3>
+
+                <p class="card-text">
+                    Consulta y administra tus citas programadas.
+                </p>
+
+                <a href="{% url 'login' %}" 
+                   class="btn btn-outline-secondary">
+                    Consultar
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 {% endblock %}

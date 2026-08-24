@@ -1,0 +1,106 @@
+{% extends "citas/base.html" %}
+
+{% block title %}
+Servicios | Clínica Estética
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1>Nuestros servicios</h1>
+
+        <p class="text-muted">
+            Consulta y administra los tratamientos disponibles.
+        </p>
+    </div>
+
+    <a
+        href="{% url 'crear_servicio' %}"
+        class="btn btn-primary"
+    >
+        + Agregar servicio
+    </a>
+
+</div>
+
+
+<div class="row g-4">
+
+    {% for servicio in servicios %}
+
+    <div class="col-md-4">
+
+        <div class="card h-100 shadow-sm">
+
+            <div class="card-body">
+
+                <h3 class="card-title">
+                    {{ servicio.nombre }}
+                </h3>
+
+                <p class="card-text">
+                    {{ servicio.descripcion }}
+                </p>
+
+                <p>
+                    <strong>Precio:</strong>
+                    ${{ servicio.precio }}
+                </p>
+
+                <p>
+                    <strong>Duración:</strong>
+                    {{ servicio.duracion }} minutos
+                </p>
+
+                <p>
+                    <strong>Estado:</strong>
+
+                    {% if servicio.activo %}
+                        Activo
+                    {% else %}
+                        Inactivo
+                    {% endif %}
+                </p>
+
+
+                <div class="d-flex gap-2 flex-wrap">
+
+                    <a
+                        href="{% url 'editar_servicio' servicio.id %}"
+                        class="btn btn-warning"
+                    >
+                        Editar
+                    </a>
+
+                    <a
+                        href="{% url 'eliminar_servicio' servicio.id %}"
+                        class="btn btn-danger"
+                    >
+                        Eliminar
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="col-12">
+
+        <div class="alert alert-info">
+            No hay servicios registrados.
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
