@@ -1,0 +1,23 @@
+{% extends "citas/base.html" %}
+
+{% block title %}Inicio | Clínica Estética{% endblock %}
+
+{% block content %}
+
+<h2>Bienvenido a Clínica Estética</h2>
+
+<p>
+    Sistema web para la gestión y reservación de citas de la clínica.
+</p>
+
+<h3>Servicios</h3>
+
+<p>
+    Consulta nuestros servicios y administra tus citas de manera sencilla.
+</p>
+
+<a href="{% url 'login' %}">
+    Iniciar sesión
+</a>
+
+{% endblock %}
