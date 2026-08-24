@@ -1,13 +1,27 @@
 from django.contrib import admin
-from .models import Servicio, Cliente, Empleado, Cita
 from django import forms
 
-
+from .models import Servicio, Cliente, Empleado, Cita
 
 
 admin.site.site_header = "Administración | Clínica Estética"
 admin.site.site_title = "Clínica Estética"
 admin.site.index_title = "Panel de administración"
+
+
+class CitaAdminForm(forms.ModelForm):
+    class Meta:
+        model = Cita
+        fields = "__all__"
+
+        widgets = {
+            "fecha": forms.DateInput(
+                attrs={"type": "date"}
+            ),
+            "hora": forms.TimeInput(
+                attrs={"type": "time"}
+            ),
+        }
 
 
 @admin.register(Servicio)
@@ -19,6 +33,7 @@ class ServicioAdmin(admin.ModelAdmin):
         "duracion",
         "activo",
     )
+
     list_filter = ("activo",)
     search_fields = ("nombre",)
 
@@ -32,6 +47,7 @@ class ClienteAdmin(admin.ModelAdmin):
         "telefono",
         "correo",
     )
+
     search_fields = (
         "nombre",
         "apellido",
@@ -49,10 +65,12 @@ class EmpleadoAdmin(admin.ModelAdmin):
         "telefono",
         "activo",
     )
+
     list_filter = (
         "especialidad",
         "activo",
     )
+
     search_fields = (
         "nombre",
         "apellido",
@@ -85,21 +103,3 @@ class CitaAdmin(admin.ModelAdmin):
         "cliente__apellido",
         "servicio__nombre",
     )
-    
-class CitaAdminForm(forms.ModelForm):
-    class Meta:
-        model = Cita
-        fields = "__all__"
-
-        widgets = {
-            "fecha": forms.DateInput(
-                attrs={
-                    "type": "date"
-                }
-            ),
-            "hora": forms.TimeInput(
-                attrs={
-                    "type": "time"
-                }
-            ),
-        }    
