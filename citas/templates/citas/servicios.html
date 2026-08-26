@@ -1,4 +1,5 @@
 {% extends "citas/base.html" %}
+{% load static %}
 
 {% block title %}
 Servicios | Clínica Estética
@@ -7,32 +8,58 @@ Servicios | Clínica Estética
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-
     <div>
         <h1>Nuestros servicios</h1>
-
         <p class="text-muted">
             Consulta y administra los tratamientos disponibles.
         </p>
     </div>
 
-    <a
-        href="{% url 'crear_servicio' %}"
-        class="btn btn-primary"
-    >
+    <a href="{% url 'crear_servicio' %}" class="btn btn-primary">
         + Agregar servicio
     </a>
-
 </div>
 
 
-<div class="row g-4">
+<div class="row">
 
     {% for servicio in servicios %}
 
-    <div class="col-md-4">
+    <div class="col-md-4 mb-4">
 
         <div class="card h-100 shadow-sm">
+
+            {% if servicio.nombre == "Limpieza Facial Profunda" or servicio.nombre == "Limpieza facial profunda" %}
+                <img src="{% static 'img/limpieza_facial.jpg' %}"
+                     class="card-img-top"
+                     alt="Limpieza facial profunda"
+                     style="height: 220px; object-fit: cover;">
+
+            {% elif servicio.nombre == "Microdermoabrasión" %}
+                <img src="{% static 'img/microdermoabrasion.jpg' %}"
+                     class="card-img-top"
+                     alt="Microdermoabrasión"
+                     style="height: 220px; object-fit: cover;">
+
+            {% elif servicio.nombre == "Depilación Láser" or servicio.nombre == "Depilación láser" %}
+                <img src="{% static 'img/depilacion_laser.jpg' %}"
+                     class="card-img-top"
+                     alt="Depilación láser"
+                     style="height: 220px; object-fit: cover;">
+
+            {% elif servicio.nombre == "Tratamiento Antiacné" or servicio.nombre == "Tratamiento antiacné" %}
+                <img src="{% static 'img/tratamiento_antiacne.jpg' %}"
+                     class="card-img-top"
+                     alt="Tratamiento antiacné"
+                     style="height: 220px; object-fit: cover;">
+
+            {% elif servicio.nombre == "Radiofrecuencia Facial" or servicio.nombre == "Radiofrecuencia facial" %}
+                <img src="{% static 'img/radiofrecuencia_facial.jpg' %}"
+                     class="card-img-top"
+                     alt="Radiofrecuencia facial"
+                     style="height: 220px; object-fit: cover;">
+            {% endif %}
+
 
             <div class="card-body">
 
@@ -65,23 +92,19 @@ Servicios | Clínica Estética
                 </p>
 
 
-                <div class="d-flex gap-2 flex-wrap">
+                <a
+                    href="{% url 'editar_servicio' servicio.id %}"
+                    class="btn btn-warning"
+                >
+                    Editar
+                </a>
 
-                    <a
-                        href="{% url 'editar_servicio' servicio.id %}"
-                        class="btn btn-warning"
-                    >
-                        Editar
-                    </a>
-
-                    <a
-                        href="{% url 'eliminar_servicio' servicio.id %}"
-                        class="btn btn-danger"
-                    >
-                        Eliminar
-                    </a>
-
-                </div>
+                <a
+                    href="{% url 'eliminar_servicio' servicio.id %}"
+                    class="btn btn-danger"
+                >
+                    Eliminar
+                </a>
 
             </div>
 
@@ -91,13 +114,7 @@ Servicios | Clínica Estética
 
     {% empty %}
 
-    <div class="col-12">
-
-        <div class="alert alert-info">
-            No hay servicios registrados.
-        </div>
-
-    </div>
+    <p>No hay servicios registrados.</p>
 
     {% endfor %}
 
