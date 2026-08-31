@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect
 from django.urls import path
 
 from .models import Servicio, Cliente, Empleado, Cita
-
+from .forms import ServicioForm
 
 # ============================================
 # PERSONALIZACIÓN DEL PANEL ADMINISTRATIVO
@@ -38,6 +38,8 @@ class CsvImportForm(forms.Form):
 @admin.register(Servicio)
 class ServicioAdmin(admin.ModelAdmin):
 
+    form = ServicioForm
+
     list_display = (
         "id",
         "nombre",
@@ -46,10 +48,12 @@ class ServicioAdmin(admin.ModelAdmin):
         "activo",
     )
 
-    list_filter = (
-        "activo",
-    )
+    list_filter = ("activo",)
 
+    search_fields = ("nombre",)
+
+    # ... aquí continúa TODO tu código de importación CSV
+    
     search_fields = (
         "nombre",
     )
