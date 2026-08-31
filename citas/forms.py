@@ -15,64 +15,46 @@ class ServicioForm(forms.ModelForm):
             "activo",
         ]
 
-        widgets = {
-            "nombre": forms.TextInput(
-                attrs={
-                    "class": "form-control",
-                    "placeholder": "Nombre del servicio",
-                }
-            ),
-
-            "descripcion": forms.Textarea(
-                attrs={
-                    "class": "form-control",
-                    "rows": 4,
-                    "placeholder": "Descripción del servicio",
-                }
-            ),
-
-            "precio": forms.NumberInput(
-                attrs={
-                    "class": "form-control",
-                }
-            ),
-
-            "duracion": forms.NumberInput(
-                attrs={
-                    "class": "form-control",
-                }
-            ),
-
-            "activo": forms.CheckboxInput(
-                attrs={
-                    "class": "form-check-input",
-                }
-            ),
-        }
+    # ============================================
+    # VALIDACIÓN INDIVIDUAL DEL NOMBRE
+    # ============================================
 
     def clean_nombre(self):
-        nombre = self.cleaned_data["nombre"]
+        nombre = self.cleaned_data.get("nombre")
 
-        nombre = nombre.strip().title()
+        if nombre:
+            nombre = nombre.strip()
 
-        return nombre
+            if len(nombre) < 3:
+                raise ValidationError(
+                    "El nombre del servicio es demasiado corto "
+                    "(mínimo 3 caracteres)."
+                )
 
-    def clean_precio(self):
-        precio = self.cleaned_data["precio"]
+        # Elimina espacios sobrantes y aplica formato título
+        return nombre.title()
 
-        if precio <= 0:
+
+    # ============================================
+    # VALIDACIÓN ENTRE NOMBRE Y PRECIO
+    # ============================================
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        nombre = cleaned_data.get("nombre")
+        precio = cleaned_data.get("precio")
+
+        # Regla de negocio entre dos campos
+        if (
+            nombre
+            and precio is not None
+            and nombre.lower() == "depilación láser"
+            and precio < 500
+        ):
             raise ValidationError(
-                "El precio debe ser mayor a cero."
+                "El servicio de Depilación láser no puede costar "
+                "menos de $500 MXN."
             )
 
-        return precio
-
-    def clean_duracion(self):
-        duracion = self.cleaned_data["duracion"]
-
-        if duracion <= 0:
-            raise ValidationError(
-                "La duración debe ser mayor a cero."
-            )
-
-        return duracion
+        return cleaned_data

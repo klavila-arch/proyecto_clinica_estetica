@@ -1,0 +1,27 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<h1>Importar servicios desde CSV</h1>
+
+<p>Selecciona un archivo CSV con la información de los servicios.</p>
+
+<form method="post" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit" class="default">
+        Importar CSV
+    </button>
+
+</form>
+
+<br>
+
+<a href="{% url 'admin:citas_servicio_changelist' %}">
+    Volver a servicios
+</a>
+
+{% endblock %}
