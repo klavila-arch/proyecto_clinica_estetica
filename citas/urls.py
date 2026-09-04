@@ -1,12 +1,9 @@
 from django.urls import path
+
 from . import views
 
 
 urlpatterns = [
-
-    # ========================================
-    # INICIO
-    # ========================================
 
     path(
         "",
@@ -14,21 +11,11 @@ urlpatterns = [
         name="inicio"
     ),
 
-
-    # ========================================
-    # LOGIN
-    # ========================================
-
     path(
         "login/",
         views.login_view,
         name="login"
     ),
-
-
-    # ========================================
-    # SERVICIOS
-    # ========================================
 
     path(
         "servicios/",
@@ -37,7 +24,7 @@ urlpatterns = [
     ),
 
     path(
-        "servicios/crear/",
+        "servicios/nuevo/",
         views.crear_servicio,
         name="crear_servicio"
     ),
@@ -54,11 +41,6 @@ urlpatterns = [
         name="eliminar_servicio"
     ),
 
-
-    # ========================================
-    # GESTIÓN DE CITAS
-    # ========================================
-
     path(
         "gestion-citas/",
         views.gestion_citas,
@@ -66,9 +48,14 @@ urlpatterns = [
     ),
 
     path(
+        "gestion-citas/nueva/",
+        views.nueva_cita,
+        name="nueva_cita"
+    ),
+
+    path(
         "gestion-citas/<int:cita_id>/estado/",
         views.actualizar_estado_cita,
         name="actualizar_estado_cita"
     ),
-
 ]

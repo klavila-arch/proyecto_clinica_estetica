@@ -3,12 +3,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .models import Servicio, Cita
-from .forms import ServicioForm
+from .forms import ServicioForm, NuevaCitaForm
+from .citadao import CitaDAO
 
-
-# ============================================
-# ROLES Y PERMISOS
-# ============================================
 
 def es_administrador(user):
     return (
@@ -41,26 +38,19 @@ def es_cliente(user):
     )
 
 
-# ============================================
-# PÁGINA DE INICIO
-# ============================================
-
 def inicio_view(request):
-    return render(request, "citas/inicio.html")
+    return render(
+        request,
+        "citas/inicio.html"
+    )
 
-
-# ============================================
-# LOGIN
-# ============================================
 
 def login_view(request):
-    return render(request, "citas/login.html")
+    return render(
+        request,
+        "citas/login.html"
+    )
 
-
-# ============================================
-# CONSULTA DE SERVICIOS
-# READ
-# ============================================
 
 def servicios_view(request):
     servicios = Servicio.objects.all()
@@ -74,13 +64,7 @@ def servicios_view(request):
     )
 
 
-# ============================================
-# CREAR SERVICIO
-# CREATE
-# Solo Administrador
-# ============================================
-
-@login_required
+@login_required(login_url="/admin/login/")
 @user_passes_test(
     es_administrador,
     login_url="/admin/login/"
@@ -92,7 +76,6 @@ def crear_servicio(request):
         form = ServicioForm(request.POST)
 
         if form.is_valid():
-
             form.save()
 
             messages.success(
@@ -103,7 +86,6 @@ def crear_servicio(request):
             return redirect("servicios")
 
     else:
-
         form = ServicioForm()
 
     return render(
@@ -116,18 +98,15 @@ def crear_servicio(request):
     )
 
 
-# ============================================
-# EDITAR SERVICIO
-# UPDATE
-# Solo Administrador
-# ============================================
-
-@login_required
+@login_required(login_url="/admin/login/")
 @user_passes_test(
     es_administrador,
     login_url="/admin/login/"
 )
-def editar_servicio(request, servicio_id):
+def editar_servicio(
+    request,
+    servicio_id
+):
 
     servicio = get_object_or_404(
         Servicio,
@@ -168,18 +147,15 @@ def editar_servicio(request, servicio_id):
     )
 
 
-# ============================================
-# ELIMINAR SERVICIO
-# DELETE
-# Solo Administrador
-# ============================================
-
-@login_required
+@login_required(login_url="/admin/login/")
 @user_passes_test(
     es_administrador,
     login_url="/admin/login/"
 )
-def eliminar_servicio(request, servicio_id):
+def eliminar_servicio(
+    request,
+    servicio_id
+):
 
     servicio = get_object_or_404(
         Servicio,
@@ -206,55 +182,100 @@ def eliminar_servicio(request, servicio_id):
     )
 
 
-# ============================================
-# GESTIÓN DE CITAS
-# READ
-# Administrador y Empleado
-# ============================================
-
-@login_required
+@login_required(login_url="/admin/login/")
 @user_passes_test(
     es_empleado,
     login_url="/admin/login/"
 )
 def gestion_citas(request):
+    """
+    Muestra únicamente las citas activas
+    utilizando la capa DAO.
+    """
 
-    citas = Cita.objects.select_related(
-        "cliente",
-        "servicio",
-        "empleado"
-    ).order_by(
-        "fecha",
-        "hora"
-    )
+    citas_activas = CitaDAO.obtener_activas()
 
     return render(
         request,
         "citas/gestion_citas.html",
         {
-            "citas": citas,
+            "citas": citas_activas,
             "estados": Cita.ESTADOS
         }
     )
 
 
-# ============================================
-# ACTUALIZAR ESTADO DE CITA
-# UPDATE
-# Administrador y Empleado
-# ============================================
-
-@login_required
+@login_required(login_url="/admin/login/")
 @user_passes_test(
     es_empleado,
     login_url="/admin/login/"
 )
-def actualizar_estado_cita(request, cita_id):
+def nueva_cita(request):
+    """
+    Permite registrar una nueva cita
+    desde el frontend utilizando el DAO.
+    """
 
-    cita = get_object_or_404(
-        Cita,
-        id=cita_id
+    if request.method == "POST":
+
+        form = NuevaCitaForm(request.POST)
+
+        if form.is_valid():
+
+            cita = CitaDAO.crear_cita(
+                cliente_id=form.cleaned_data["cliente"].id,
+                servicio_id=form.cleaned_data["servicio"].id,
+                empleado_id=form.cleaned_data["empleado"].id,
+                fecha=form.cleaned_data["fecha"],
+                hora=form.cleaned_data["hora"],
+                notas=form.cleaned_data["notas"]
+            )
+
+            if cita:
+
+                messages.success(
+                    request,
+                    f"¡Cita registrada correctamente "
+                    f"para {cita.cliente}!"
+                )
+
+                return redirect(
+                    "gestion_citas"
+                )
+
+            else:
+
+                messages.error(
+                    request,
+                    "Ocurrió un problema al registrar la cita."
+                )
+
+    else:
+
+        form = NuevaCitaForm()
+
+    return render(
+        request,
+        "citas/nueva_cita.html",
+        {
+            "form": form
+        }
     )
+
+
+@login_required(login_url="/admin/login/")
+@user_passes_test(
+    es_empleado,
+    login_url="/admin/login/"
+)
+def actualizar_estado_cita(
+    request,
+    cita_id
+):
+    """
+    Actualiza el estado de una cita
+    desde la vista web utilizando el DAO.
+    """
 
     if request.method == "POST":
 
@@ -269,15 +290,25 @@ def actualizar_estado_cita(request, cita_id):
 
         if nuevo_estado in estados_validos:
 
-            cita.estado = nuevo_estado
-
-            cita.save()
-
-            messages.success(
-                request,
-                f"La cita #{cita.id} fue actualizada a "
-                f"{cita.get_estado_display()}."
+            cita = CitaDAO.cambiar_estado(
+                cita_id,
+                nuevo_estado
             )
+
+            if cita:
+
+                messages.success(
+                    request,
+                    f"La cita #{cita.id} fue actualizada a "
+                    f"{cita.get_estado_display()}."
+                )
+
+            else:
+
+                messages.error(
+                    request,
+                    "No se encontró la cita."
+                )
 
         else:
 
